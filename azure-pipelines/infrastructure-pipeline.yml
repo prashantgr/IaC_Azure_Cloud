@@ -29,4 +29,4 @@ steps:
       subscriptionId: 'your-subscription-id'
       resourceGroupName: $(resourceGroup)
       templateLocation: 'Linked artifact'
-      csmFile: 'prash-arm-templates/prash-aks-template.json'
+      csmFile: 'arm-templates/aks-template.json'
