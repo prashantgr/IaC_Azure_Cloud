@@ -11,5 +11,17 @@ This repository contains the code and configurations for the XYZ DevOps project,
 - [Clean Up Resources](#clean-up-resources)
 - [License](#license)
 
-## Project Structure
+## Prerequisites
+- An **Azure account** with appropriate permissions to create resources.
+- **Azure CLI** installed on your local machine.
+- An **Azure DevOps account** to manage CI/CD pipelines.
+- **Docker** installed for building container images.
+- A **Java Development Kit (JDK)** and **Maven** for building the Java backend application.
+- **Node.js** and **npm** for building the React frontend application.
+
+## Clone the Repository
+To clone the repository, use the following command:
+```bash
+git clone https://github.com/yourusername/XYZ-DevOps-Project.git
+cd XYZ-DevOps-Project
 
