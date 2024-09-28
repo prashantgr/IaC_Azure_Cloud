@@ -1,0 +1,32 @@
+# prash Infrastructure Deployment Pipeline for Azure DevOps
+
+trigger:
+  branches:
+    include:
+      - main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  resourceGroup: 'prash-devops-rg'
+  location: 'eastus'
+
+steps:
+  - task: AzureResourceManagerTemplateDeployment@3
+    inputs:
+      deploymentScope: 'Resource Group'
+      azureResourceManagerConnection: 'your-service-connection'
+      subscriptionId: 'your-subscription-id'
+      action: 'Create Or Update Resource Group'
+      resourceGroupName: $(resourceGroup)
+      location: $(location)
+
+  - task: AzureResourceManagerTemplateDeployment@3
+    inputs:
+      deploymentScope: 'Resource Group'
+      azureResourceManagerConnection: 'your-service-connection'
+      subscriptionId: 'your-subscription-id'
+      resourceGroupName: $(resourceGroup)
+      templateLocation: 'Linked artifact'
+      csmFile: 'prash-arm-templates/prash-aks-template.json'

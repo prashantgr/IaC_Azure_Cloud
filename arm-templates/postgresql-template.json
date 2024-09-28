@@ -1,0 +1,40 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "resources": [
+      {
+        "type": "Microsoft.DBforPostgreSQL/servers",
+        "apiVersion": "2017-12-01",
+        "location": "[resourceGroup().location]",
+        "name": "[parameters('dbServerName')]",
+        "properties": {
+          "version": "11",
+          "administratorLogin": "[parameters('adminUsername')]",
+          "administratorLoginPassword": "[parameters('adminPassword')]",
+          "storageProfile": {
+            "storageMB": 5120,
+            "backupRetentionDays": 7,
+            "geoRedundantBackup": "Disabled"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "dbServerName": {
+        "type": "string",
+        "defaultValue": "devops-postgres",
+        "metadata": {
+          "description": "Name of the PostgreSQL server."
+        }
+      },
+      "adminUsername": {
+        "type": "string",
+        "defaultValue": "dbadmin"
+      },
+      "adminPassword": {
+        "type": "securestring",
+        "defaultValue": "P@ssword123!"
+      }
+    }
+  }
+  

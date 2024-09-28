@@ -1,0 +1,28 @@
+# prash Frontend CI/CD Pipeline for Azure DevOps
+
+trigger:
+  branches:
+    include:
+      - main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  imageName: 'prash-frontend'
+
+steps:
+  - script: npm install
+    displayName: 'Install Node Modules'
+
+  - script: npm run build
+    displayName: 'Build React Application'
+
+  - script: docker build -t $(imageName):$(Build.BuildId) .
+    displayName: 'Build Docker Image'
+
+  - script: docker tag $(imageName):$(Build.BuildId) $(containerRegistry)/$(imageName):latest
+    displayName: 'Tag Image'
+
+  - script: docker push $(containerRegistry)/$(imageName):latest
+    displayName: 'Push Image to ACR'

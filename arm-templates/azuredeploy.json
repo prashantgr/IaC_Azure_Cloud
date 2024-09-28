@@ -1,0 +1,65 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "resources": [
+      {
+        "type": "Microsoft.Resources/deployments",
+        "apiVersion": "2019-10-01",
+        "name": "acrDeployment",
+        "properties": {
+          "mode": "Incremental",
+          "templateLink": {
+            "uri": "./acr-template.json"
+          }
+        }
+      },
+      {
+        "type": "Microsoft.Resources/deployments",
+        "apiVersion": "2019-10-01",
+        "name": "aksDeployment",
+        "dependsOn": [
+          "acrDeployment"
+        ],
+        "properties": {
+          "mode": "Incremental",
+          "templateLink": {
+            "uri": "./aks-template.json"
+          }
+        }
+      },
+      {
+        "type": "Microsoft.Resources/deployments",
+        "apiVersion": "2019-10-01",
+        "name": "postgresqlDeployment",
+        "properties": {
+          "mode": "Incremental",
+          "templateLink": {
+            "uri": "./postgresql-template.json"
+          }
+        }
+      },
+      {
+        "type": "Microsoft.Resources/deployments",
+        "apiVersion": "2019-10-01",
+        "name": "keyvaultDeployment",
+        "properties": {
+          "mode": "Incremental",
+          "templateLink": {
+            "uri": "./keyvault-template.json"
+          }
+        }
+      },
+      {
+        "type": "Microsoft.Resources/deployments",
+        "apiVersion": "2019-10-01",
+        "name": "monitorDeployment",
+        "properties": {
+          "mode": "Incremental",
+          "templateLink": {
+            "uri": "./monitor-template.json"
+          }
+        }
+      }
+    ]
+  }
+  

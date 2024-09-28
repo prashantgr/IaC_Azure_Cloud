@@ -1,0 +1,60 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "resources": [
+    {
+      "type": "Microsoft.ContainerService/managedClusters",
+      "apiVersion": "2022-01-01",
+      "name": "prash-aks-cluster",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "kubernetesVersion": "1.21.9",
+        "dnsPrefix": "[concat('prash-', resourceGroup().location, '-dns')]",
+        "agentPoolProfiles": [
+          {
+            "name": "agentpool",
+            "count": 3,
+            "vmSize": "Standard_DS2_v2",
+            "osType": "Linux",
+            "maxPods": 110,
+            "type": "VirtualMachineScaleSets",
+            "mode": "System"
+          }
+        ],
+        "servicePrincipalProfile": {
+          "clientId": "[parameters('clientId')]",
+          "secret": "[parameters('clientSecret')]"
+        },
+        "addonProfiles": {
+          "omsAgent": {
+            "enabled": true,
+            "config": {
+              "logAnalyticsWorkspaceResourceID": "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('logAnalyticsWorkspaceName'))]"
+            }
+          }
+        },
+        "networkProfile": {
+          "networkPlugin": "azure",
+          "serviceCidr": "10.0.0.0/16",
+          "dnsServiceIP": "10.0.0.10",
+          "dockerBridgeCidr": "172.17.0.1/16"
+        },
+        "identity": {
+          "type": "SystemAssigned"
+        }
+      }
+    }
+  ],
+  "parameters": {
+    "clientId": {
+      "type": "string"
+    },
+    "clientSecret": {
+      "type": "securestring"
+    },
+    "logAnalyticsWorkspaceName": {
+      "type": "string",
+      "defaultValue": "prash-log-analytics"
+    }
+  }
+}
