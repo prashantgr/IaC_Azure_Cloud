@@ -1,117 +1,102 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.0.0",
-    "parameters": {
-      "keyVaultName": {
-        "type": "string",
-        "defaultValue": "devops-keyvault",
-        "metadata": {
-          "description": "Name of the Azure Key Vault."
-        }
-      },
-      "location": {
-        "type": "string",
-        "defaultValue": "[resourceGroup().location]",
-        "metadata": {
-          "description": "Location for the Key Vault."
-        }
-      },
-      "objectId": {
-        "type": "string",
-        "metadata": {
-          "description": "The Azure Active Directory object ID of the entity (e.g., AKS Service Principal) that will be granted access to this Key Vault."
-        }
-      },
-      "dbAdminUsername": {
-        "type": "string",
-        "defaultValue": "dbadmin",
-        "metadata": {
-          "description": "Admin username for the Azure PostgreSQL database."
-        }
-      },
-      "dbAdminPassword": {
-        "type": "securestring",
-        "metadata": {
-          "description": "Admin password for the Azure PostgreSQL database."
-        }
-      },
-      "clientSecret": {
-        "type": "securestring",
-        "metadata": {
-          "description": "Service principal client secret for AKS."
-        }
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "resources": [
+    {
+      "type": "Microsoft.KeyVault/vaults",
+      "apiVersion": "2019-09-01",
+      "name": "[parameters('keyVaultName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "sku": {
+          "family": "A",
+          "name": "standard"
+        },
+        "tenantId": "[parameters('tenantId')]",
+        "accessPolicies": [
+          {
+            "tenantId": "[parameters('tenantId')]",
+            "objectId": "[parameters('objectId')]",
+            "permissions": {
+              "secrets": [
+                "get",
+                "list",
+                "set",
+                "delete",
+                "recover",
+                "backup",
+                "restore"
+              ]
+            }
+          }
+        ]
       }
     },
-    "resources": [
-      {
-        "type": "Microsoft.KeyVault/vaults",
-        "apiVersion": "2019-09-01",
-        "name": "[parameters('keyVaultName')]",
-        "location": "[parameters('location')]",
-        "properties": {
-          "sku": {
-            "family": "A",
-            "name": "Standard"
-          },
-          "tenantId": "[subscription().tenantId]",
-          "accessPolicies": [
-            {
-              "tenantId": "[subscription().tenantId]",
-              "objectId": "[parameters('objectId')]",
-              "permissions": {
-                "secrets": [
-                  "get",
-                  "list",
-                  "set",
-                  "delete"
-                ]
-              }
-            }
-          ]
-        }
-      },
-      {
-        "type": "Microsoft.KeyVault/vaults/secrets",
-        "apiVersion": "2019-09-01",
-        "name": "[concat(parameters('keyVaultName'), '/dbAdminUsername')]",
-        "properties": {
-          "value": "[parameters('dbAdminUsername')]",
-          "contentType": "Database admin username"
-        },
-        "dependsOn": [
-          "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
-        ]
-      },
-      {
-        "type": "Microsoft.KeyVault/vaults/secrets",
-        "apiVersion": "2019-09-01",
-        "name": "[concat(parameters('keyVaultName'), '/dbAdminPassword')]",
-        "properties": {
-          "value": "[parameters('dbAdminPassword')]",
-          "contentType": "Database admin password"
-        },
-        "dependsOn": [
-          "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
-        ]
-      },
-      {
-        "type": "Microsoft.KeyVault/vaults/secrets",
-        "apiVersion": "2019-09-01",
-        "name": "[concat(parameters('keyVaultName'), '/aksClientSecret')]",
-        "properties": {
-          "value": "[parameters('clientSecret')]",
-          "contentType": "AKS service principal client secret"
-        },
-        "dependsOn": [
-          "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
-        ]
+    {
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2018-02-14",
+      "name": "[concat(parameters('keyVaultName'), '/ClientId')]",
+      "properties": {
+        "value": "[parameters('clientId')]",
+        "contentType": "text"
       }
-    ],
-    "outputs": {
-      "keyVaultUri": {
-        "type": "string",
-        "value": "[reference(parameters('keyVaultName')).vaultUri]"
+    },
+    {
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2018-02-14",
+      "name": "[concat(parameters('keyVaultName'), '/ClientSecret')]",
+      "properties": {
+        "value": "[parameters('clientSecret')]",
+        "contentType": "text"
+      }
+    },
+    {
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2018-02-14",
+      "name": "[concat(parameters('keyVaultName'), '/ObjectId')]",
+      "properties": {
+        "value": "[parameters('objectId')]",
+        "contentType": "text"
+      }
+    }
+  ],
+  "parameters": {
+    "keyVaultName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the Azure Key Vault to be created."
+      }
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "eastus",
+      "metadata": {
+        "description": "Location for the Key Vault."
+      }
+    },
+    "tenantId": {
+      "type": "string",
+      "metadata": {
+        "description": "Azure Active Directory Tenant ID."
+      }
+    },
+    "objectId": {
+      "type": "string",
+      "metadata": {
+        "description": "Object ID of the Service Principal."
+      }
+    },
+    "clientId": {
+      "type": "string",
+      "metadata": {
+        "description": "Client ID of the Service Principal."
+      }
+    },
+    "clientSecret": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Client Secret of the Service Principal."
       }
     }
   }
-  
+}

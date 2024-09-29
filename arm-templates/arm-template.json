@@ -1,0 +1,101 @@
+/* not using */
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "environment": {
+        "type": "string",
+        "defaultValue": "dev",
+        "allowedValues": ["dev", "test", "uat", "prod"],
+        "metadata": {
+          "description": "The environment for which this template is being deployed."
+        }
+      },
+      "acrName": {
+        "type": "string",
+        "metadata": {
+          "description": "The base name for the Azure Container Registry (ACR)."
+        }
+      },
+      "aksClusterName": {
+        "type": "string",
+        "metadata": {
+          "description": "The base name for the AKS cluster."
+        }
+      },
+      "keyVaultName": {
+        "type": "string",
+        "metadata": {
+          "description": "The base name for the Azure Key Vault."
+        }
+      }
+    },
+    "variables": {
+      "fullAcrName": "[concat(parameters('acrName'), '-', parameters('environment'))]",
+      "fullAksClusterName": "[concat(parameters('aksClusterName'), '-', parameters('environment'))]",
+      "fullKeyVaultName": "[concat(parameters('keyVaultName'), '-', parameters('environment'))]"
+    },
+    "resources": [
+      {
+        "type": "Microsoft.ContainerRegistry/registries",
+        "apiVersion": "2019-05-01",
+        "location": "[resourceGroup().location]",
+        "name": "[variables('fullAcrName')]",
+        "sku": {
+          "name": "Basic"
+        },
+        "properties": {
+          "adminUserEnabled": true
+        }
+      },
+      {
+        "type": "Microsoft.KeyVault/vaults",
+        "apiVersion": "2019-09-01",
+        "location": "[resourceGroup().location]",
+        "name": "[variables('fullKeyVaultName')]",
+        "properties": {
+          "sku": {
+            "family": "A",
+            "name": "standard"
+          },
+          "tenantId": "[subscription().tenantId]",
+          "accessPolicies": []
+        }
+      },
+      {
+        "type": "Microsoft.ContainerService/managedClusters",
+        "apiVersion": "2021-03-01",
+        "location": "[resourceGroup().location]",
+        "name": "[variables('fullAksClusterName')]",
+        "properties": {
+          "dnsPrefix": "[variables('fullAksClusterName')]",
+          "agentPoolProfiles": [
+            {
+              "name": "nodepool1",
+              "count": 3,
+              "vmSize": "Standard_DS2_v2",
+              "osType": "Linux",
+              "maxPods": 110,
+              "type": "VirtualMachineScaleSets",
+              "mode": "System"
+            }
+          ]
+        }
+      }
+    ],
+    "outputs": {
+      "acrName": {
+        "type": "string",
+        "value": "[variables('fullAcrName')]"
+      },
+      "aksClusterName": {
+        "type": "string",
+        "value": "[variables('fullAksClusterName')]"
+      },
+      "keyVaultName": {
+        "type": "string",
+        "value": "[variables('fullKeyVaultName')]"
+      }
+    }
+  }
+  
