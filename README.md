@@ -22,6 +22,6 @@ This repository contains the code and configurations for the XYZ DevOps project,
 ## Clone the Repository
 To clone the repository, use the following command:
 ```bash
-git clone https://github.com/yourusername/XYZ-DevOps-Project.git
-cd XYZ-DevOps-Project
+git clone https://github.com/prashantgr/IaC_Azure_Cloud.git
+cd IaC_Azure_Cloud
 
